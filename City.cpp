@@ -12,8 +12,8 @@ class City
 private:
     string cityName;
     int populationSize;
-    float areaSize;
     int id;
+    float areaSize;
 
     static int count;
     static int nextId;
@@ -31,56 +31,82 @@ public:
 
     City(string name, int population)
     {
-        setName(name);
-        setPopulation(population);
-        areaSize = round(population / 1500.0f * 100.0f) / 100.0f; // reasonable average for a Lithuanian urban city
-        count++;
-        id = nextId++;
+        City(name, population, 0);
     }
 
     // Destructor
     ~City()
     {
-        cout << cityName << " has been destroyed.\n";
         count--;
     }
 
     // Setters
     void setName(string name)
     {
-        if (name.empty())
+        if (!name.empty())
+        {
+            cityName = name;
+        }
+        else
         {
             throw invalid_argument("Name cannot be empty.\n");
         }
-        cityName = name;
     }
 
     void setPopulation(int population)
     {
-        if (population < 1)
+        if (population >= 1)
+        {
+            populationSize = population;
+        }
+        else
         {
             throw out_of_range("Population must be at least one.\n");
         }
-        populationSize = population;
     }
 
-    void setSize(float size) { areaSize = size; }
+    void setSize(float size)
+    {
+        if (size >= 1)
+        {
+            areaSize = size;
+        }
+        else
+        {
+            throw out_of_range("Area size should be more than zero.\n");
+        }
+    }
 
     // Getters
-    string getName() const { return cityName; }
+    string getName() const
+    {
+        return cityName;
+    }
 
-    int getPopulation() const { return populationSize; }
+    int getPopulation() const
+    {
+        return populationSize;
+    }
 
-    float getSize() const { return areaSize; }
+    float getSize() const
+    {
+        return areaSize;
+    }
 
-    int getId() const { return id; }
+    int getId() const
+    {
+        return id;
+    }
 
-    static int getCount() { return count; }
+    static int getCount()
+    {
+        return count;
+    }
 
     string toString() const
     {
         stringstream s;
-        s << "City: " << cityName << ", Population: " << populationSize << ", Area: " << areaSize << " km²\n";
+        s << cityName << "," << populationSize << "," << areaSize;
         return s.str();
     }
 };
@@ -96,7 +122,7 @@ void test1()
     assert(city.getName() == "Vilnius");
     assert(city.getPopulation() == 600000);
     assert(city.getSize() == 402);
-    assert(s == ("City: Vilnius, Population: 600000, Area: 402 km²\n"));
+    assert(s == "Vilnius,600000,402");
 
     cout << "test1 PASSED\n";
 }
@@ -162,6 +188,7 @@ void test5()
 
     cout << "test5 PASSED\n";
 }
+
 int main()
 {
     try
@@ -172,8 +199,11 @@ int main()
         test4();
         test5();
     }
-    catch (const exception &e)
+    catch (...)
     {
-        cout << "Unexpected exception: " << e.what();
+        cout << "Unexpected exception caught in main.\n";
+        return 1;
     }
+    assert(City::getCount() == 0);
+    return 0;
 }
